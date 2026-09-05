@@ -114,7 +114,7 @@ import { ShareNoteImageDialog, type ShareNoteImageSource } from "./dialogs/Share
 import { AiAssistantDialog, type AiAssistantAnchor } from "./dialogs/AiAssistantDialog";
 import { api } from "@/lib/api";
 import { isDesktopResourceRuntime, stageDesktopResource, toDesktopResourceUrl } from "@/lib/desktop-resources";
-import { cn, formatDateTime, formatLocalizedDateTime, parseTagsText } from "@/lib/utils";
+import { cn, formatDateTime, parseTagsText } from "@/lib/utils";
 import { EDITOR_CONTENT_MAX_WIDTH, EDITOR_CONTENT_MAX_WIDTH_COLLAPSED } from "@/lib/workspace-ui";
 import {
   countMemoCharacters,
@@ -3639,9 +3639,7 @@ const RichEditorPane = ({
         ? "bg-emerald-50 text-emerald-700"
         : saveStateClassName;
 
-  const memoDateLocale = i18n.resolvedLanguage ?? i18n.language;
-  const createdLabel = formatLocalizedDateTime(memo.createdAt, memoDateLocale);
-  const updatedLabel = formatLocalizedDateTime(memo.updatedAt, memoDateLocale);
+  const updatedLabel = formatDateTime(memo.updatedAt);
   const currentNotebookLabel = notebookOptions.find((notebook) => notebook.id === memo.notebookId)?.name ?? t("editor.notebookFallback");
   const currentMarkdownForAi = getCurrentMarkdownForAi();
 
@@ -3883,7 +3881,7 @@ const RichEditorPane = ({
               </IconTooltip>
             </div>
             <span className="hidden truncate text-xs text-slate-400 sm:inline">
-              {t("editor.timestamps", { createdTime: createdLabel, updatedTime: updatedLabel })}
+              {t("editor.updatedAt", { time: updatedLabel })}
             </span>
           </div>
 
@@ -4128,6 +4126,16 @@ const RichEditorPane = ({
                 >
                   <History className="h-4 w-4 text-slate-500" />
                   {t("editor.versionHistory")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="flex h-9 w-full items-center gap-2 px-3 text-left text-sm text-slate-700 hover:bg-slate-50 cursor-pointer outline-none min-[1600px]:hidden"
+                  onClick={() => setSystemInfoOpen(true)}
+                >
+                  <span className="relative flex h-4 w-4 shrink-0 items-center justify-center">
+                    <Info className="h-4 w-4 text-slate-500" />
+                    {deployedUpdateUnseen ? <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-1 ring-white" /> : null}
+                  </span>
+                  {t("systemInfo.title")}
                 </DropdownMenuItem>
                 {!effectiveReadOnly && (
                   <DropdownMenuItem
